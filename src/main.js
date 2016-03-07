@@ -52,10 +52,6 @@ function hasBuilds(cb) {
   });
 }
 
-function fetchBuildsData(cb) {
-
-}
-
 function injectBuildsLink() {
   // Do not inject if not on repository page
   if ($(".repository-content").length == 0) return;
