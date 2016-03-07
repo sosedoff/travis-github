@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "name": "Github Travis CI Builds",
+  "author": "Dan Sosedoff",
+  "description": "Chrome extension to add Travis CI builds tab to Github UI",
+  "version": "1.0.3",
+  "permissions": [
+    "tabs"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://github.com/*"
+      ],
+      "js": [
+        "jquery.min.js",
+        "mustache.min.js",
+        "moment.min.js",
+        "templates.js",
+        "main.js"
+      ],
+      "css": [
+        "main.css"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "icons": {
+    "19": "logo.png",
+    "32": "logo.png",
+    "48": "logo.png",
+    "96": "logo.png",
+    "128": "logo.png"
+  }
+}
