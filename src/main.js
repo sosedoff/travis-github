@@ -81,6 +81,9 @@ $(function() {
   $("body").on("click", ".show-builds", function(e) {
     e.preventDefault();
 
+    // Show progress loader
+    $(".page-context-loader").show();
+
     // Unselect any active nav links
     $(".reponav a.reponav-item").removeClass("selected");
 
@@ -94,6 +97,9 @@ $(function() {
     // Fetch builds data from Travis API
     // Pull requests are skipped since there's already PR tab
     $.getJSON(travisUrl, { event_type: "push" }, function(resp) {
+      // Done loading
+      $(".page-context-loader").hide();
+
       // Refarmat builds for the view
       for (i in resp) {
         builds.push(formatBuildItem(repoPath, resp[i]))
