@@ -56,6 +56,9 @@ function injectBuildsLink() {
   // Do not inject if not on repository page
   if ($(".repository-content").length == 0) return;
 
+  // Do not inject if nav bar is not there for some reason
+  if ($(".reponav").length == 0) return;
+
   // Do not reinject the link if it's still on the page
   if ($(".show-builds").length > 0) return;
 
