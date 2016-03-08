@@ -1,6 +1,6 @@
 var linkTemplate = "\
 <span itemscope='' itemtype='http://schema.org/ListItem' itemprop='itemListElement'>\
-  <a href='#' aria-selected='true' class='js-selected-navigation-item reponav-item show-builds' itemprop='url'>\
+  <a href='#' aria-selected='true' class='js-selected-navigation-item reponav-item show-builds' itemprop='url' data-hotkey='g b'>\
     <svg aria-hidden='true' class='octicon octicon-primitive-dot icon-for-inactive' height='16' role='img' version='1.1' viewBox='0 0 8 16' width='8'><path d='M0 8c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4S0 10.2 0 8z'></path></svg>\
     <span itemprop='name'>Builds</span>\
     <meta itemprop='position' content='2'>\
