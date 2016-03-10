@@ -19,3 +19,7 @@ Try extension on any of the following repositories:
 ## Demo
 
 ![demo](demo.gif)
+
+## License
+
+MIT
