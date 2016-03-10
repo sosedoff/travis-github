@@ -22,7 +22,12 @@ Try extension on any of the following repositories:
 
 ## Private Repos
 
-In order to support private repos built on travis-ci.com, you need to configure the extension with a Travis CI API Token. The easiest way to obtain one is to run `sessionStorage.getItem('travis.token');` in the Chrome developer tools console, while on a travis-ci.com page. Add the token to this extension via the `Options` link on the Chrome extensions page OR right-clicking the icon in the menu bar and selecting `Options`.
+In order to support private repos built on travis-ci.com, you need to configure 
+the extension with a Travis CI API Token. The easiest way to obtain one is to 
+run `sessionStorage.getItem('travis.token');` in the Chrome developer tools console, 
+while on a travis-ci.com page. Add the token to this extension via the `Options` link 
+on the Chrome extensions page OR right-clicking the icon in the menu bar and 
+selecting `Options`.
 
 ## License
 

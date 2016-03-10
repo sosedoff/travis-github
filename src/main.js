@@ -1,14 +1,18 @@
 // Determine the repository namespace
 var repoPath = window.location.pathname.split("/").slice(1, 3).join("/");
 
+// Travis CI api token for private builds
 var travisApiToken;
+
 function getApiToken(cb) {
-  chrome.storage.sync.get('travisApiToken', function(items) {
+  chrome.storage.sync.get("travisApiToken", function(items) {
     travisApiToken = items.travisApiToken;
     cb();
   });
+
   chrome.storage.onChanged.addListener(function(changes, namespace) {
     if (namespace !== "sync") return;
+
     for (var key in changes) {
       if (key !== "travisApiToken") continue;
       travisApiToken = changes[key].newValue;
