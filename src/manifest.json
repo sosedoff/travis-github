@@ -5,7 +5,7 @@
   "description": "Chrome extension to add Travis CI builds tab to Github UI",
   "version": "1.0.6",
   "permissions": [
-    "tabs"
+    "storage"
   ],
   "content_scripts": [
     {
@@ -31,5 +31,9 @@
     "48": "logo.png",
     "96": "logo.png",
     "128": "logo.png"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "chrome_style": true
   }
 }
