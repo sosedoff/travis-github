@@ -1,21 +1,36 @@
 // Determine the repository namespace
 var repoPath = window.location.pathname.split("/").slice(1, 3).join("/");
 
-function formatBuildItem(repoPath, item) {
+var travisApiToken;
+function getApiToken(cb) {
+  chrome.storage.sync.get('travisApiToken', function(items) {
+    travisApiToken = items.travisApiToken;
+    cb();
+  });
+  chrome.storage.onChanged.addListener(function(changes, namespace) {
+    if (namespace !== "sync") return;
+    for (var key in changes) {
+      if (key !== "travisApiToken") continue;
+      travisApiToken = changes[key].newValue;
+    }
+  });
+}
+
+function formatBuildItem(webBaseUrl, repoPath, item, commit) {
   // Generate build url
-  item.build_url = "https://travis-ci.org/" + repoPath + "/builds/" + item.id;
+  item.build_url = webBaseUrl + repoPath + "/builds/" + item.id;
 
   // Do not include multi-line messages in the list
-  item.message = item.message.split("\n")[0];
+  item.message = commit.message.split("\n")[0];
 
   // Determine outcome of the build
-  item.success = parseInt(item.result) == 0;
+  item.success = item.state === "passed";
 
   // Set css class for the icons
   item.css_class = "text-pending";
 
   // Set extra attributes when build is finished
-  if (item.state == "finished") {
+  if (item.finished_at) {
     item.finished = true;
     item.duration = moment.utc(moment(item.finished_at).diff(moment(item.started_at))).format("m [minutes and] s [seconds]");
     item.finished_at_string = moment(item.finished_at).fromNow();
@@ -27,10 +42,16 @@ function formatBuildItem(repoPath, item) {
     }
   }
 
+  item.branch = commit.branch;
+
   return item;
 }
 
-function hasBuilds(cb) {
+function apiBaseUrl(isPrivate) {
+  return isPrivate ? "https://api.travis-ci.com/repos/" : "https://api.travis-ci.org/repos/";
+}
+
+function hasBuilds(isPrivate, cb) {
   var key = "travis/" + repoPath;
   var exists = localStorage.getItem(key);
 
@@ -40,7 +61,8 @@ function hasBuilds(cb) {
   }
 
   $.ajax({
-    url: "https://api.travis-ci.org/repos/" + repoPath + ".json",
+    url: apiBaseUrl(isPrivate) + repoPath + ".json",
+    headers: isPrivate ? { "Authorization": "token " + travisApiToken } : undefined,
     success: function() {
       localStorage.setItem(key, "1");
       cb(true);
@@ -52,7 +74,7 @@ function hasBuilds(cb) {
   });
 }
 
-function injectBuildsLink() {
+function injectBuildsLink(isPrivate) {
   // Do not inject if not on repository page
   if ($(".repository-content").length == 0) return;
 
@@ -62,7 +84,10 @@ function injectBuildsLink() {
   // Do not reinject the link if it's still on the page
   if ($(".show-builds").length > 0) return;
 
-  hasBuilds(function(result) {
+  // Do not inject if private but no API token is configured
+  if (isPrivate && !travisApiToken) return;
+
+  hasBuilds(isPrivate, function(result) {
     // No not inject link if project does not have builds
     if (!result) return;
 
@@ -74,9 +99,12 @@ function injectBuildsLink() {
   });
 }
 
-$(function() {
+function inject() {
+  var isPrivate = $("h1.entry-title.private").length;
+  var webBaseUrl = isPrivate ? "https://travis-ci.com/" : "https://travis-ci.org/";
+
   // Automatically inject the builds link
-  injectBuildsLink();
+  injectBuildsLink(isPrivate);
 
   // Reinject the builds tab link when user switched between repository tabs
   $(document).on("pjax:complete", injectBuildsLink);
@@ -93,35 +121,48 @@ $(function() {
     // Make our own tab link active
     $(this).addClass("selected");
     
-    var viewUrl = "https://travis-ci.org/" + repoPath;
-    var travisUrl = "https://api.travis-ci.org/repos/" + repoPath + "/builds";
+    var viewUrl = webBaseUrl + repoPath;
+    var travisUrl = apiBaseUrl(isPrivate) + repoPath + "/builds";
     var builds = [];
 
     // Fetch builds data from Travis API
     // Pull requests are skipped since there's already PR tab
-    $.getJSON(travisUrl, { event_type: "push" }, function(resp) {
-      // Done loading
-      $(".page-context-loader").hide();
+    $.ajax({
+      url: travisUrl,
+      data: { event_type: "push" },
+      dataType: "json",
+      accepts: {
+        "json": "application/vnd.travis-ci.2+json"
+      },
+      headers: isPrivate ? { "Authorization": "token " + travisApiToken } : undefined,
+      success: function(resp) {
+        // Done loading
+        $(".page-context-loader").hide();
 
-      // Refarmat builds for the view
-      for (i in resp) {
-        builds.push(formatBuildItem(repoPath, resp[i]))
+        // Refarmat builds for the view
+        for (i in resp.builds) {
+          builds.push(formatBuildItem(webBaseUrl, repoPath, resp.builds[i], resp.commits[i]))
+        }
+
+        // Render builds list
+        var view = Mustache.render(buildTemplate, {
+          viewUrl: viewUrl,
+          builds: builds
+        });
+
+        // Render builds tab content
+        var output = Mustache.render(tabTemplate, {
+          hasBuilds: builds.length > 0,
+          view: view,
+          viewUrl: viewUrl
+        });
+
+        $(".repository-content").html(output);
       }
-
-      // Render builds list
-      var view = Mustache.render(buildTemplate, {
-        viewUrl: viewUrl,
-        builds: builds
-      });
-
-      // Render builds tab content
-      var output = Mustache.render(tabTemplate, {
-        hasBuilds: builds.length > 0,
-        view: view,
-        viewUrl: viewUrl
-      });
-
-      $(".repository-content").html(output);
     });
   });
+}
+
+$(function() {
+  getApiToken(inject);
 });
