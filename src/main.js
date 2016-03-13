@@ -104,14 +104,14 @@ function injectBuildsLink(isPrivate) {
 }
 
 function inject() {
-  var isPrivate = $("h1.entry-title.private").length;
+  var isPrivate = $("h1.entry-title.private").length > 0;
   var webBaseUrl = isPrivate ? "https://travis-ci.com/" : "https://travis-ci.org/";
 
   // Automatically inject the builds link
   injectBuildsLink(isPrivate);
 
   // Reinject the builds tab link when user switched between repository tabs
-  $(document).on("pjax:complete", injectBuildsLink);
+  $(document).on("pjax:complete", function() { injectBuildsLink(isPrivate) });
 
   $("body").on("click", ".show-builds", function(e) {
     e.preventDefault();
