@@ -104,7 +104,7 @@ function injectBuildsLink(isPrivate) {
 }
 
 function inject() {
-  var isPrivate = $("h1.entry-title.private").length > 0;
+  var isPrivate = $("h1.private").length > 0;
   var webBaseUrl = isPrivate ? "https://travis-ci.com/" : "https://travis-ci.org/";
 
   // Automatically inject the builds link
