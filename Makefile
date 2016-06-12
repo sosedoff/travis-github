@@ -1,5 +1,5 @@
 build: clean
-	zip github-builds.zip src/*
+	zip github-build.zip src/*
 
 clean:
 	rm -f *.zip
