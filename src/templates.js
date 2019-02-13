@@ -10,12 +10,12 @@ var linkTemplate = "\
 var tabTemplate = "\
 {{#hasBuilds}}\
   <div class='subnav subnav-builds'>\
-    <a href='{{viewUrl}}' class='btn right'>View All Builds</a>\
+    <a href='{{viewUrl}}' class='btn float-right'>View All Builds</a>\
     <div class='left subnav-spacer-right'>\
-      <h3>Travis CI Builds</h3>\
+      <h2>Travis CI Builds</h2>\
     </div>\
   </div>\
-  <ul class='table-list table-list-bordered table-list-builds'>{{{view}}}</ul>\
+  {{{view}}}\
 {{/hasBuilds}}\
 {{^hasBuilds}}\
   {{{view}}}\
@@ -23,35 +23,41 @@ var tabTemplate = "\
 
 var buildTemplate = "\
 {{#builds.length}}\
-  {{#builds}}\
-    <li id='build_{{id}}' class='table-list-item build'>\
-      <div class='table-list-cell table-list-cell-type'>\
-        <span class='{{css_class}}'>\
-          {{#finished}}\
-            {{#success}}\
-              <svg aria-hidden='true' class='octicon octicon-check' height='16' role='img' version='1.1' viewBox='0 0 12 16' width='12'><path d='M12 5L4 13 0 9l1.5-1.5 2.5 2.5 6.5-6.5 1.5 1.5z'></path></svg>\
-            {{/success}}\
-            {{^success}}\
-              <svg aria-hidden='true' class='octicon octicon-x' height='16' role='img' version='1.1' viewBox='0 0 12 16' width='12'><path d='M7.48 8l3.75 3.75-1.48 1.48-3.75-3.75-3.75 3.75-1.48-1.48 3.75-3.75L0.77 4.25l1.48-1.48 3.75 3.75 3.75-3.75 1.48 1.48-3.75 3.75z'></path></svg>\
-            {{/success}}\
-          {{/finished}}\
-          {{^finished}}\
-            <svg aria-hidden='true' class='octicon octicon-primitive-dot icon-for-inactive' height='16' role='img' version='1.1' viewBox='0 0 8 16' width='8'><path d='M0 8c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4S0 10.2 0 8z'></path></svg>\
-          {{/finished}}\
-        </span>\
-      </div>\
-      <div class='table-list-cell issue-title'>\
-        <a href='{{build_url}}' class='issue-title-link' target='_blank'>{{message}}</a>\
-        <div class='issue-meta'>\
-          <span class='issue-meta-section'>\
-            #{{number}} on {{branch}}\
-            {{#finished}}- {{#finished_at_string}}finished {{finished_at_string}}, took {{duration}}{{/finished_at_string}}{{/finished}}\
-            {{^finished}}- state: {{state}}{{#started_at_string}}, started {{started_at_string}}{{/started_at_string}}{{/finished}}\
-          </span>\
+  <div class='border-right border-bottom border-left border-top'>\
+    {{#builds}}\
+      <div class='Box-row Box-row--focus-gray p-0 js-navigation-item js-issue-row'>\
+        <div class='d-table table-fixed width-full position-relative'>\
+          <div class='float-left pt-2 pl-3'>\
+            {{#finished}}\
+              {{#success}}\
+                <span class='text-green'>\
+                  <svg aria-hidden='true' class='octicon octicon-check' height='16' role='img' version='1.1' viewBox='0 0 16 16' width='16'><path d='M12 5L4 13 0 9l1.5-1.5 2.5 2.5 6.5-6.5 1.5 1.5z'></path></svg>\
+                </span>\
+              {{/success}}\
+              {{^success}}\
+                <span class='text-red'>\
+                  <svg aria-hidden='true' class='octicon octicon-x' height='16' role='img' version='1.1' viewBox='0 0 16 16' width='16'><path d='M7.48 8l3.75 3.75-1.48 1.48-3.75-3.75-3.75 3.75-1.48-1.48 3.75-3.75L0.77 4.25l1.48-1.48 3.75 3.75 3.75-3.75 1.48 1.48-3.75 3.75z'></path></svg>\
+                </span>\
+              {{/success}}\
+            {{/finished}}\
+            {{^finished}}\
+              <span class='text-yellow'>\
+                <svg aria-hidden='true' class='octicon octicon-primitive-dot icon-for-inactive' height='16' role='img' version='1.1' viewBox='0 0 16 16' width='16'><path d='M0 8c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4S0 10.2 0 8z'></path></svg>\
+              </span>\
+            {{/finished}}\
+          </div> \
+          <div class='float-left col-11 lh-condensed p-2'>\
+            <a href='{{build_url}}' class='link-gray-dark v-align-middle no-underline h4' target='_blank'>{{ message }}</a>\
+            <div class='mt-1 text-small text-gray'>\
+              #{{ number }} on {{ branch }}\
+              {{#finished}}- {{#finished_at_string}}finished {{ finished_at_string }}, took {{ duration }}{{/ finished_at_string}}{{/ finished}}\
+              {{^ finished}}- state: {{ state }}{{#started_at_string}}, started {{ started_at_string }}{{/ started_at_string}}{{/ finished}}\
+            </div>\
+          </div>\
         </div>\
       </div>\
-    </li>\
-  {{/builds}}\
+    {{/builds}}\
+  </div>\
 {{/builds.length}}\
 {{^builds.length}}\
   <div class='blankslate spacious large-format'>\
